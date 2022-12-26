@@ -27,18 +27,18 @@
             </form>
             <div>
                 <div>
-                    <h5 class="font-semibold inline">Overdue</h5>
-                    <h6 class="inline px-5" id="count-overdue"><%= allTodos.length %></h6>
+                    <h5 class="font-semibold inline ">Overdue</h5>
+                    <h6 class="inline px-2 font-bold text-sm bg-gray-200 rounded" id="count-overdue"><%= allTodos.length %></h6>
                     <%- include("todos.ejs") %>
                 </div>
                 <div>
                     <h5 class="font-semibold inline">Due Today</h5>
-                    <h6 class="inline px-5" id="count-due-today"><%= allTodos.length %></h6>
+                    <h6 class="inline px-2 font-bold text-sm bg-gray-200 rounded" id="count-due-today"><%= allTodos.length %></h6>
                     <%- include("todos.ejs") %>
                 </div>
                 <div>
                     <h5 class="font-semibold inline">Due Later</h5>
-                    <h6 class="inline px-5" id="count-due-later"><%= allTodos.length %></h6>
+                    <h6 class="inline px-2 font-bold text-sm bg-gray-200 rounded" id="count-due-later"><%= allTodos.length %></h6>
                     <%- include("todos.ejs") %>
                 </div>
             </div>
