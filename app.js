@@ -2,7 +2,7 @@ const express = require("express");
 var csrf = require("tiny-csrf");
 var cookieParser = require("cookie-parser");
 const app = express();
-const { Todo } = require("./models");
+const { Todo, User } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
 app.use(bodyParser.json());
@@ -42,6 +42,27 @@ app.get("/", async function (request, response) {
   }
 });
 
+app.get("/signup", (request, response) => {
+  response.render("signup", {
+    title: "Sign Up",
+    csrfToken: request.csrfToken(),
+  });
+});
+
+app.post("/users", async (request, response) => {
+  try {
+    await User.create({
+      firstName: request.body.firstName,
+      lastName: request.body.lastName,
+      email: request.body.email,
+      password: request.body.password,
+    });
+    response.redirect("/");
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 app.get("/todos", async function (_request, response) {
   console.log("Processing list of all Todos ...");
   try {
@@ -74,11 +95,9 @@ app.post("/todos", async function (request, response) {
 });
 
 app.put("/todos/:id", async function (request, response) {
-  const todo = await Todo.findByPk(request.params.id);
   try {
-    const updatedTodo = await todo.setCompletionStatus(
-      todo.completed ? false : true
-    );
+    const todo = await Todo.findByPk(request.params.id);
+    const updatedTodo = await todo.setCompletionStatus(request.body.completed);
     return response.json(updatedTodo);
   } catch (error) {
     console.log(error);

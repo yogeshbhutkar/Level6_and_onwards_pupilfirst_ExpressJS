@@ -63,10 +63,43 @@ describe("Todo Application", function () {
       .put(`/todos/${latestTodo.id}`)
       .send({
         _csrf: csrfToken,
+        completed: true,
       });
 
     const parsedUpdateResponse = JSON.parse(markCompleteResponse.text);
     expect(parsedUpdateResponse.completed).toBe(true);
+  });
+
+  test("Marks a todo with the given ID as incomplete", async () => {
+    let res = await agent.get("/");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/todos").send({
+      title: "Buy milk",
+      dueDate: new Date().toISOString(),
+      completed: true,
+      _csrf: csrfToken,
+    });
+
+    const groupedTodosResponse = await agent
+      .get("/")
+      .set("Accept", "application/json");
+    const parsedGroupedResponse = JSON.parse(groupedTodosResponse.text);
+    // console.log(parsedGroupedResponse);
+    const dueTodayCount = parsedGroupedResponse.allTodos.length;
+    const latestTodo = parsedGroupedResponse.allTodos[dueTodayCount - 1];
+
+    res = await agent.get("/");
+    csrfToken = extractCsrfToken(res);
+
+    const markIncompleteResponse = await agent
+      .put(`/todos/${latestTodo.id}`)
+      .send({
+        _csrf: csrfToken,
+        completed: false,
+      });
+
+    const parsedUpdateResponse = JSON.parse(markIncompleteResponse.text);
+    expect(parsedUpdateResponse.completed).toBe(false);
   });
 
   test("Deletes a todo with the given ID if it exists and sends a boolean response", async () => {
@@ -79,20 +112,27 @@ describe("Todo Application", function () {
       completed: false,
       _csrf: csrfToken,
     });
+    let resAgain = await agent.get("/");
+    let csrfTokenAgain = extractCsrfToken(resAgain);
     await agent.post("/todos").send({
       title: "Item 2",
       dueDate: new Date().toISOString(),
       completed: false,
-      _csrf: csrfToken,
+      _csrf: csrfTokenAgain,
     });
     const responsePost = await agent.get("/todos");
     const parsedResponsePost = JSON.parse(responsePost.text);
+    console.log(parsedResponsePost);
+    expect(parsedResponsePost.length).toBe(5);
 
-    expect(parsedResponsePost.length).toBe(3);
-
-    await agent.delete("/todos/1");
+    let resAgainAgain = await agent.get("/");
+    let csrfTokenAgainAgain = extractCsrfToken(resAgainAgain);
+    const deleteHere = await agent.delete("/todos/5").send({
+      _csrf: csrfTokenAgainAgain,
+    });
     const afterDelete = await agent.get("/todos");
     const jsonifyResponse = JSON.parse(afterDelete.text);
-    expect(jsonifyResponse.length).toBe(3);
+    console.log(jsonifyResponse);
+    expect(jsonifyResponse.length).toBe(4);
   });
 });

@@ -10,12 +10,13 @@
     <title>Todo Homepage</title>
     <script>
         var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
-        function updateTodo(id){
+        function updateTodo(id, itemStatus){
             fetch(`/todos/${id}`, {
                 method: "put",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
-                    "_csrf": token
+                    "_csrf": token,
+                    "completed": itemStatus,
                 })
             })
                 .then((res)=>{
@@ -63,26 +64,10 @@
                 </div>
             </form>
             <div>
-                <div>
-                    <h5 class="font-semibold inline ">Overdue</h5>
-                    <h6 class="inline px-2 font-bold text-sm bg-gray-200 rounded" id="count-overdue"><%= overdue.length %></h6>
-                    <%- include("overdue.ejs") %>
-                </div>
-                <div>
-                    <h5 class="font-semibold inline">Due Today</h5>
-                    <h6 class="inline px-2 font-bold text-sm bg-gray-200 rounded" id="count-due-today"><%= dueToday.length %></h6>
-                    <%- include("dueToday.ejs") %>
-                </div>
-                <div>
-                    <h5 class="font-semibold inline">Due Later</h5>
-                    <h6 class="inline px-2 font-bold text-sm bg-gray-200 rounded" id="count-due-later"><%= dueLater.length %></h6>
-                    <%- include("dueLater.ejs") %>
-                </div>
-                <div>
-                    <h5 class="font-semibold inline">Completed</h5>
-                    <h6 class="inline px-2 font-bold text-sm bg-gray-200 rounded" id="count-due-later"><%= completed.length %></h6>
-                    <%- include("completed.ejs") %>
-                </div>
+                <%- include("todo.ejs", {title: "Overdue", data: overdue}) %>
+                <%- include("todo.ejs", {title: "Due Today", data: dueToday}) %>
+                <%- include("todo.ejs", {title: "Due Later", data: dueLater}) %>
+                <%- include("todo.ejs", {title: "Completed Items", data: completed}) %>
             </div>
         </div>
     </div>
