@@ -99,7 +99,7 @@ app.get(
       const overdue = await Todo.overdue(uid);
       const completed = await Todo.getCompleted(uid);
       const allTodos = await Todo.getTodos(uid);
-
+      const username = request.user.firstName + request.user.lastName;
       if (request.accepts("html")) {
         response.render("todos", {
           dueToday,
@@ -107,6 +107,7 @@ app.get(
           overdue,
           completed,
           allTodos,
+          username,
           csrfToken: request.csrfToken(),
           title: "My Todos",
         });
