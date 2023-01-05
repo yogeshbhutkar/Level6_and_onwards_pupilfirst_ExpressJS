@@ -166,6 +166,15 @@ app.post("/users", async (request, response) => {
       request.flash("error", "password must contain atleast 8 characters.");
       return response.redirect("/signup");
     }
+    const emailExistsCheck = await User.findOne({
+      where: {
+        email: request.body.email,
+      },
+    });
+    if (emailExistsCheck) {
+      request.flash("error", "Email already exists.");
+      return response.redirect("/signup");
+    }
     const user = await User.create({
       firstName: request.body.firstName,
       lastName: request.body.lastName,
